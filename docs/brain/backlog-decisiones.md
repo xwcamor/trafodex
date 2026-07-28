@@ -86,11 +86,21 @@
 
 ### 3. Trabajo identificado, sin bloqueo
 
+- **DEPENDENCIA DE DEPLOY — el laboratorio vive colgado del TRAPP viejo.** El
+  sistema Rails del laboratorio comparte **14 tablas** con `tr_app_development`
+  (la base del TRAPP viejo, no la de acá): no solo muestras, también
+  `customers`, `countries`, `oil_types`, `marks`, `conmutation_types` y la
+  jerarquía de sedes. Diez de esos modelos heredan de una clase abstracta
+  `Primary2` y no lo declaran de forma visible. **Cuando TrafoDex reemplace al
+  TRAPP viejo en producción, el laboratorio se queda sin clientes y sin
+  catálogos.** Coordinar el corte del droplet con la fase 1 de su migración.
+  Ver [INTEGRACION-LABORATORIO](../INTEGRACION-LABORATORIO.md) §1.
 - **API de ingreso del laboratorio** (`/api/v1/lab-results`). Hoy el sistema
-  del laboratorio escribe DIRECTO en esta base con una segunda conexión
-  (`tr_app_development.chromatographicals`), sin idempotencia, emparejando
-  transformadores por número de serie en texto y **sin disparar el recálculo
-  del índice de salud**. El diseño del reemplazo está en
+  del laboratorio escribe DIRECTO en esa base con una segunda conexión, sin
+  idempotencia, emparejando transformadores por número de serie en texto,
+  **sin disparar el recálculo del índice de salud**, y colapsando sus 20 tipos
+  de equipo a 3 (todo lo que no es potencia/distribución/horno se manda como
+  "potencia", así que un bushing llega etiquetado como transformador). El diseño del reemplazo está en
   [INTEGRACION-LABORATORIO](../INTEGRACION-LABORATORIO.md): controlador,
   abilities `lab:write`, tabla `idempotency_keys`, `sample_documents` para el
   PDF firmado, y feature de plan `lab_integration`. Es la fase 7 del plan de

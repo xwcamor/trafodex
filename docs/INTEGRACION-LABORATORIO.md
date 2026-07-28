@@ -18,11 +18,27 @@
 El laboratorio de análisis de aceite (hoy una aplicación Rails de 2019, en
 migración a Laravel) es el que genera las muestras que TRAFODEX diagnostica.
 
-**Cómo funciona hoy**: el sistema del laboratorio abre una segunda conexión a
-la base de TRAFODEX (`establish_connection(:primary2)`,
-`self.table_name = 'tr_app_development.chromatographicals'`) e inserta filas
-directamente en `chromatographicals`, `physicals` (hoy `fiquis`), `furanos` y
-`transformers`.
+**Cómo funciona hoy**: el sistema del laboratorio comparte **14 tablas** con la
+base `tr_app_development`, por dos vías: cinco modelos con
+`establish_connection(:primary2)` explícito, y otros diez que heredan de una
+clase abstracta `Primary2` sin ninguna marca visible (`Customer`, `OilType`,
+`Mark`, `Country`, `ConmutationType`, `CustomerLocation`, `CustomerArea`,
+`CustomerSubstation`, `ChromatographicalDuval`, `ChromatographicalDgaDiag`).
+
+O sea: el laboratorio **no tiene clientes ni catálogos propios**. Los lee y los
+escribe en la otra base.
+
+> **`tr_app_development` es el TRAPP viejo en Ruby, no este proyecto.**
+> Tabla `physicals` (acá es `fiquis`), columnas `num_hid`/`num_oxi` (acá `h2`/`o2`),
+> `date_rehearsal` (acá `sample_date`), `deleted` entero (acá SoftDeletes), y
+> MySQL contra PostgreSQL. Los datos de esa base ya se migraron acá con los
+> `Legacy*Seeder`.
+>
+> **Implicancia para el despliegue de TrafoDex**: el día que este sistema
+> reemplace al TRAPP viejo en producción, el laboratorio deja de funcionar —
+> no pierde una integración, pierde sus clientes y sus catálogos. El desacople
+> del laboratorio (su fase 1) tiene que estar hecho **antes** de ese corte.
+> Vale tenerlo presente al planificar el deploy del droplet.
 
 Riesgos que eso implica para TRAFODEX, todos reales:
 
