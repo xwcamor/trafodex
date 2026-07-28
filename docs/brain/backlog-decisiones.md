@@ -86,6 +86,16 @@
 
 ### 3. Trabajo identificado, sin bloqueo
 
+- **BUG DE DEPLOY — `npm run build` falla en Linux por mayúsculas.** La carpeta
+  es `resources/js/Utils/` (con U), pero dos archivos la importan en minúscula:
+  `resources/js/app.js:10` (`@/utils/severity`) y
+  `resources/js/Pages/Customers/Index.vue:22` (`@/utils/filterTree`). En Windows
+  el sistema de archivos no distingue mayúsculas y no se nota; en Linux Vite
+  corta con `Could not load .../resources/js/utils/severity`. **El droplet es
+  Linux**, así que esto revienta el primer build de producción. Arreglo: cambiar
+  las dos importaciones a `@/Utils/...`. Encontrado al construir TR LAB sobre
+  una copia de este núcleo (2026-07-28).
+
 - **DEPENDENCIA DE DEPLOY — el laboratorio vive colgado del TRAPP viejo.** El
   sistema Rails del laboratorio comparte **14 tablas** con `tr_app_development`
   (la base del TRAPP viejo, no la de acá): no solo muestras, también
