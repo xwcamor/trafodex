@@ -21,6 +21,9 @@
   número (Ruby viejo, Excel de Duval, papers, normas IEEE/IEC).
 - [Informe PDF y aprobaciones](informes-y-aprobaciones.md) — el informe
   consolidado, firmas, flujo de aprobación batch, compartir.
+- [Integración con el laboratorio](../INTEGRACION-LABORATORIO.md) — DISEÑO: la
+  API `/api/v1/lab-results` que reemplaza la escritura directa que hoy hace el
+  sistema del laboratorio sobre esta base.
 
 ### El SaaS base
 - [Módulos y scaffold](modulos-scaffold.md) — cómo se crea un módulo, qué

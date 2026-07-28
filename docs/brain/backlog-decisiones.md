@@ -86,6 +86,18 @@
 
 ### 3. Trabajo identificado, sin bloqueo
 
+- **API de ingreso del laboratorio** (`/api/v1/lab-results`). Hoy el sistema
+  del laboratorio escribe DIRECTO en esta base con una segunda conexión
+  (`tr_app_development.chromatographicals`), sin idempotencia, emparejando
+  transformadores por número de serie en texto y **sin disparar el recálculo
+  del índice de salud**. El diseño del reemplazo está en
+  [INTEGRACION-LABORATORIO](../INTEGRACION-LABORATORIO.md): controlador,
+  abilities `lab:write`, tabla `idempotency_keys`, `sample_documents` para el
+  PDF firmado, y feature de plan `lab_integration`. Es la fase 7 del plan de
+  migración del laboratorio; nada implementado aún.
+  > De paso resuelve el pendiente del **gap de D1816** de la sección 1: el
+  > contrato manda `methods` con la separación de electrodos por muestra, así
+  > que de aquí en adelante el dato llega registrado.
 - **Informe Word: celdas en rojo** cuando un valor pasa su límite, como en el
   PDF. Es la última diferencia conocida entre los dos informes.
 - **Migración del delta del sistema viejo**. Los dumps llegan hasta ~2026-05-26
