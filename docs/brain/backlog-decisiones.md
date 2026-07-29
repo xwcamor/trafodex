@@ -59,6 +59,10 @@
   pero D1816 admite 1 mm o 2 mm y los kV NO son comparables. Si el laboratorio
   mide a 1 mm hay que corregir la etiqueta **y** los umbrales, y eso mueve el
   diagnóstico de miles de muestras. Confirmar con el laboratorio.
+  *Parcialmente encaminado (2026-07-29)*: las muestras que entran por la
+  [API del laboratorio](../API-LABORATORIO.md) traen el gap explícito y se
+  guarda en `fiquis.methods`. Lo HISTÓRICO sigue sin registro, así que la
+  confirmación con el laboratorio sigue pendiente.
 - **`pot100` de silicona = 0.2 %** — está más exigente que el límite a 25 °C
   (0.8 %), y eso va al revés: el factor de potencia sube con la temperatura, así
   que su límite debería ser más holgado. Número heredado del Ruby viejo. Hoy no

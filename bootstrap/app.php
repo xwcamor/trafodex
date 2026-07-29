@@ -69,6 +69,10 @@ return Application::configure(basePath: dirname(__DIR__))
             // Plan feature gating — bloquea si el tenant no tiene la feature.
             //   plan_feature:api_access → solo planes con api_access habilitado
             'plan_feature'          => \App\Http\Middleware\EnforcePlanFeature::class,
+            // Idempotencia de la API — reintentar no duplica.
+            //   idempotency          → cabecera Idempotency-Key obligatoria
+            //   idempotency:optional → se respeta si viene
+            'idempotency'           => \App\Http\Middleware\EnforceIdempotency::class,
         ]);
 
         // Inertia: share props on every response in the web group.

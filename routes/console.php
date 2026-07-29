@@ -42,6 +42,15 @@ Schedule::command('reports:purge-frozen')
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/purge.log'));
 
+// Purga las claves de idempotencia de la API vencidas (30 días). Es registro
+// técnico de la integración con el laboratorio, no dato de negocio: pasada esa
+// ventana nadie va a reintentar ese envío. Diario, de madrugada.
+Schedule::command('api:purge-idempotency-keys')
+    ->dailyAt('04:30')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/purge.log'));
+
 // Purga notificaciones de automation con mas de 12 horas. Las notifs de
 // automation son info ambient (no requieren ack), se autoborran para que
 // el bell no se llene. Otras categorias (security, plan_change) no se tocan.

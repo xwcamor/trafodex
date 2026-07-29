@@ -55,6 +55,9 @@ class Fiqui extends Model
     protected $fillable = [
         'transformer_id', 'sample_date', 'report_number', 'laboratory_id',
         'rig', 'ten', 'acid', 'wat', 'pot', 'rig877', 'pot100',
+        // Condiciones de ensayo que informa el laboratorio por API (norma, gap
+        // de electrodos, temperatura). Constancia, no entra al diagnóstico.
+        'methods',
         'score', 'rating', 'condition',
         'tenant_id', 'created_by', 'deleted_by',
     ];
@@ -64,6 +67,7 @@ class Fiqui extends Model
         'rig' => 'decimal:3', 'ten' => 'decimal:3', 'acid' => 'decimal:4',
         'wat' => 'decimal:2', 'pot' => 'decimal:4',
         'rig877' => 'decimal:3', 'pot100' => 'decimal:4',
+        'methods' => 'array',
         'score' => 'decimal:2', 'rating' => 'decimal:1',
     ];
 

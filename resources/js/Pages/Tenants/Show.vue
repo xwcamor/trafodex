@@ -72,7 +72,12 @@ const availableAbilities = computed(() => [
     { value: 'customers:read',   label: t('tenants.ability_customers_read') },
     { value: 'customers:write',  label: t('tenants.ability_customers_write') },
     { value: 'customers:delete', label: t('tenants.ability_customers_delete') },
-    // Cuando expongamos APIs de Products / Sales se agregarán aquí.
+    // Integración con el laboratorio (docs/API-LABORATORIO.md). El token del
+    // laboratorio lleva lab:write + transformers:read; transformers:write solo
+    // si además se le permite dar de alta equipos que no existen.
+    { value: 'transformers:read',  label: t('tenants.ability_transformers_read') },
+    { value: 'transformers:write', label: t('tenants.ability_transformers_write') },
+    { value: 'lab:write',          label: t('tenants.ability_lab_write') },
 ]);
 
 // ─── Create token modal ────────────────────────────────────────────────────

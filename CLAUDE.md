@@ -700,6 +700,49 @@ de plano). Solo múltiplos de 0.5.
   ANTES de descargar, el PDF reflejaría lo nuevo (ventana de aprobación corta; no
   crítico). Congelar el render completo = endurecimiento futuro.
 
+### API del laboratorio (entrada de resultados) — 2026-07-29
+
+> Detalle completo, ejemplos y códigos de error: [`docs/API-LABORATORIO.md`](docs/API-LABORATORIO.md).
+
+El sistema de laboratorio deja de escribir en nuestra base y manda los
+resultados por API. Tres endpoints bajo `/api/v1`, siguiendo el patrón de
+`CustomerApiController`: `GET transformers/lookup` (`transformers:read`),
+`POST transformers` (`transformers:write`), `POST lab-results` (`lab:write`).
+Piezas: `LabResultApiController` + `app/Services/Lab/` (`LabResultService`
+ingesta, `LabTransformerService` búsqueda/alta) + `config/lab_integration.php`
+(mapa analito→columna: agregar un parámetro es una LÍNEA de config, no un `if`).
+
+- **Idempotencia** (`EnforceIdempotency` + tabla `idempotency_keys`): cabecera
+  `Idempotency-Key` obligatoria en `lab-results`. El reintento devuelve 200 con
+  la respuesta original; misma clave con otro cuerpo = 409. La respuesta se
+  guarda DENTRO de la transacción de los datos, y una petición fallida LIBERA su
+  clave (para que el laboratorio corrija y reintente con la misma).
+- **Segunda red**: índice único PARCIAL `(tenant_id, laboratory_id,
+  report_number)` en las 4 tablas de muestras, con `WHERE report_number IS NOT
+  NULL AND deleted_at IS NULL` — las ~20.000 filas históricas sin número quedan
+  fuera. Si hubiera duplicados previos la migración avisa y salta la tabla.
+- **Tras insertar corre `HealthIndexService::evaluate()`** (índice de salud +
+  caché de flota del trafo). El job `RecalculateFleetCache` NO: ése es para
+  cuando cambian las REGLAS.
+- **Desajustes de modelo resueltos** (el porqué, en el doc): 20 tipos de equipo
+  vs 3 → se rechaza lo que no se sabe diagnosticar (nunca "mayor a 3 →
+  Potencia"); 3 tensiones vs 1 → se toma el MÁXIMO (define la clase de tensión
+  del IEEE C57.106); fases entero→texto por tabla, sin redondeo; subestación
+  obligatoria sin API de jerarquía → se acepta id o nombre y el 422 devuelve
+  `available_substations` (NO se fabrica el nodo "-" del sistema viejo).
+- **`methods` del laboratorio → columna**: `rig` con norma D877 va a `rig877`,
+  `pot` a 100 °C va a `pot100`, y el bloque crudo se guarda en `fiquis.methods`
+  (columna nueva). Cierra HACIA ADELANTE el pendiente del gap de rigidez sin
+  registrar; lo histórico sigue igual.
+- **Gating**: alcanza con `auth:sanctum` + abilities + `plan_feature:api_access`.
+  NO se agregó feature de plan `lab_integration` (como pedía el doc del
+  laboratorio): la fuente de verdad son las filas de `plans`, y una clave nueva
+  daría 402 hasta editarlas todas. Tampoco permiso Spatie (el rol `api` no tiene
+  permisos y ninguna ruta de la API usa `permission:`) ni toggle por empresa (el
+  token ya es el interruptor, y solo el super lo crea).
+- FUERA DE ALCANCE por ahora: el PDF firmado del laboratorio
+  (`sample_documents`) y el webhook de vuelta (premium futuro).
+
 ### Procedencia y fuente de verdad
 
 - **Documentación de origen**: [`docs/origen-ruby/`](docs/origen-ruby/README.md)

@@ -159,6 +159,9 @@ return [
     'ability_customers_read'   => 'Customers — read',
     'ability_customers_write'  => 'Customers — create/edit',
     'ability_customers_delete' => 'Customers — delete',
+    'ability_transformers_read'  => 'Transformers — search (laboratory)',
+    'ability_transformers_write' => 'Transformers — create (laboratory)',
+    'ability_lab_write'          => 'Laboratory — submit test results',
 
     'table_headers' => [
         'editable_name'   => 'Name (editable)',
